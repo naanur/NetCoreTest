@@ -20,7 +20,13 @@ namespace NetCoreTest
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    IConfigurationRoot config = JsonConfigurationExtensions.AddJsonFile((IConfigurationBuilder)new ConfigurationBuilder(), "appsettings.json", false).Build();
+                    string hostString = (string)ConfigurationBinder.GetValue<string>(config, "HOST");
+                    if (!string.IsNullOrEmpty(hostString))
+                    {
+                        HostingAbstractionsWebHostBuilderExtensions.UseUrls(webBuilder, new string[1] { hostString });
+                    }
+                    WebHostBuilderExtensions.UseStartup<Startup>(webBuilder);
                 });
     }
 }
